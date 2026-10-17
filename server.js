@@ -4,11 +4,11 @@ const path = require("path");
 const { GoogleGenAI } = require("@google/genai");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 // Replace with your NEW Google API key.
 // Keep this file private; never put the key in browser JavaScript.
-const API_KEY = "AQ.Ab8RN6KIYjluS2PTAOSGdIKOk-VCu5z_JP04VPEH0jJBP4A8ow";
+const API_KEY = process.env.GEMINI_API_KEY;
 
 //new stuff i added
 const ai = new GoogleGenAI({ apiKey: API_KEY });
