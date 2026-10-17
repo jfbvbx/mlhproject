@@ -1,0 +1,12 @@
+
+# Visual Studio temporary files
+.vs/
+
+# Node.js dependencies
+node_modules/
+
+# Secrets - never upload API keys
+.env
+
+# Logs
+npm-debug.log*
