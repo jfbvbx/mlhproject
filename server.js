@@ -8,8 +8,9 @@ const PORT = 3000;
 
 // Replace with your NEW Google API key.
 // Keep this file private; never put the key in browser JavaScript.
-const API_KEY = "AQ.Ab8RN6J-yXC_UmLfD6WB_qfwyCWSng2DTZHfxM8GWTmIeoQthg";
+const API_KEY = "AQ.Ab8RN6KIYjluS2PTAOSGdIKOk-VCu5z_JP04VPEH0jJBP4A8ow";
 
+//new stuff i added
 const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 app.use(express.json());
