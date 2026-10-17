@@ -1,40 +1,33 @@
+
 const express = require("express");
 const path = require("path");
 const { GoogleGenAI } = require("@google/genai");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
-require("dotenv").config();
+// Replace with your NEW Google API key.
+// Keep this file private; never put the key in browser JavaScript.
+const API_KEY = "AQ.Ab8RN6J-yXC_UmLfD6WB_qfwyCWSng2DTZHfxM8GWTmIeoQthg";
 
-// Configure Google Gemma API
-if (!process.env.GEMMA_API_KEY) {
-    console.error("Missing GEMMA_API_KEY in .env");
-    process.exit(1);
-}
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GEMMA_API_KEY
-});
-
-// Middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
 
-// Test whether the server is running
+// Serve files from the public folder beside server.js
+const publicFolder = path.join(__dirname, "public");
+app.use(express.static(publicFolder));
+
 app.get("/api/health", (req, res) => {
     res.json({ status: "Server is running" });
 });
 
-// Send messages to Gemma
 app.post("/api/chat", async (req, res) => {
     try {
-        const { message } = req.body || {};
+        const message = req.body?.message;
 
         if (typeof message !== "string" || !message.trim()) {
-            return res.status(400).json({
-                error: "Please provide a message."
-            });
+            return res.status(400).json({ error: "Please enter a message." });
         }
 
         const result = await ai.models.generateContent({
@@ -42,32 +35,26 @@ app.post("/api/chat", async (req, res) => {
             contents: message.trim()
         });
 
-        res.json({
-            reply: result.text || "Gemma returned no text."
-        });
+        res.json({ reply: result.text || "No response returned." });
     } catch (error) {
         console.error("Gemma API error:", error.message);
-
-        res.status(500).json({
-            error: "Gemma request failed. Check your API key, model access, and API availability."
-        });
+        res.status(500).json({ error: "Gemma API request failed." });
     }
 });
 
-// Handle missing API endpoints
-app.use("/api", (req, res) => {
-    res.status(404).json({
-        error: `API endpoint not found: ${req.method} ${req.originalUrl}`
-    });
-});
-
-// Handle missing website files
+// Show a useful message for missing files or pages
 app.use((req, res) => {
-    res.status(404).send(`File or page not found: ${req.originalUrl}`);
+    res.status(404).send(`Not found: ${req.method} ${req.originalUrl}`);
 });
 
-// Start server
-app.listen(PORT, () => {
+// Start the server and report startup errors
+const server = app.listen(PORT, "127.0.0.1", () => {
+    console.log("Node.js server started successfully.");
     console.log(`Website: http://localhost:${PORT}`);
     console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Serving website files from: ${publicFolder}`);
+});
+
+server.on("error", (error) => {
+    console.error("Server startup error:", error.message);
 });
