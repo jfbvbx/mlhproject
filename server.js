@@ -3,6 +3,20 @@ const express = require("express");
 const path = require("path");
 const { GoogleGenAI } = require("@google/genai");
 
+const dotenv = require("dotenv");
+
+const envPath = path.join(__dirname, ".env");
+
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+    console.error("FAILED TO LOAD .env:", result.error.message);
+} else {
+    console.log(".env loaded successfully!");
+}
+
+console.log("API key found:", !!process.env.GEMINI_API_KEY);
+
 const app = express();
 const PORT = process.env.PORT;
 
