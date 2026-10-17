@@ -1,0 +1,164 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #101018;
+    color: #e9e5f5;
+    font-family: system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+}
+
+.game {
+    width: 100%;
+    max-width: 680px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+    header h1 {
+        color: #c4a7ff;
+        margin-bottom: 4px;
+        font-size: 2.2rem;
+    }
+
+    header p, footer {
+        color: #9893aa;
+    }
+
+.panel {
+    background: #1b1a27;
+    border: 1px solid #39344e;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 10px 35px #0005;
+}
+
+h2 {
+    color: #d6c5ff;
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin: 18px 0 8px;
+    color: #c9c3da;
+}
+
+input, textarea {
+    width: 100%;
+    background: #11111a;
+    color: white;
+    border: 1px solid #454057;
+    border-radius: 8px;
+    padding: 12px;
+    font: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    width: 100%;
+    padding: 13px 16px;
+    margin-top: 12px;
+    background: #7954c7;
+    color: white;
+    border: 0;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+    button:hover {
+        background: #936de5;
+        transform: translateY(-1px);
+    }
+
+    button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+        transform: none;
+    }
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: #c4a7ff;
+    font-weight: bold;
+}
+
+.divider {
+    height: 1px;
+    background: #39344e;
+    margin: 20px 0;
+}
+
+#story {
+    white-space: pre-wrap;
+    line-height: 1.8;
+    color: #d5d0e2;
+    min-height: 100px;
+}
+
+.choices {
+    display: grid;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+    .choices button {
+        margin: 0;
+        text-align: left;
+        background: #292538;
+        border: 1px solid #514567;
+        line-height: 1.5;
+    }
+
+        .choices button:hover {
+            background: #39304e;
+            border-color: #a98ae8;
+        }
+
+.status {
+    color: #b6a5db;
+    font-size: 0.9rem;
+    min-height: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+footer {
+    text-align: center;
+    font-size: 0.85rem;
+    margin-top: 24px;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 18px 10px;
+    }
+
+    .panel {
+        padding: 18px;
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+    }
+}

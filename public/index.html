@@ -4,36 +4,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 80px 20px;
-            background: #f4f7fb;
-            color: #222;
-        }
-
-        h1 {
-            color: #2563eb;
-        }
-
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            background: #2563eb;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
+    <title>Studybound: A Study Roguelike</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Welcome to My Website!</h1>
-    <p>Your Node.js server is running successfully.</p>
-    <button onclick="alert('Your website is working!')">
-        Click Me
-    </button>
-    <script src="/main.js"></script>
+    <main class="game">
+        <header>
+            <h1>⚔️ Studybound</h1>
+            <p>Learn. Survive. Descend.</p>
+        </header>
+
+        <section id="setup" class="panel">
+            <h2>Begin Your Run</h2>
+            <label for="subject">What do you want to study?</label>
+            <input id="subject" placeholder="e.g. JavaScript, Biology, History">
+
+            <label for="notes">Your notes (optional)</label>
+            <textarea id="notes" rows="6"
+                      placeholder="Paste your study notes here..."></textarea>
+
+            <button id="startBtn">Start Adventure</button>
+        </section>
+
+        <section id="adventure" class="panel hidden">
+            <div class="stats">
+                <span id="floor">Floor 1</span>
+                <span id="health">❤️ 3 HP</span>
+                <span id="knowledge">📚 0 XP</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <h2 id="sceneTitle">The Forgotten Library</h2>
+            <p id="story">Your adventure begins...</p>
+
+            <div id="choices" class="choices"></div>
+
+            <p id="status" class="status"></p>
+        </section>
+
+        <section id="gameOver" class="panel hidden">
+            <h2 id="endingTitle">Run Complete</h2>
+            <p id="endingText"></p>
+            <button id="restartBtn">Start a New Run</button>
+        </section>
+
+        <footer>Every encounter teaches you something.</footer>
+    </main>
+
+    <script src="game.js"></script>
 </body>
 </html>
