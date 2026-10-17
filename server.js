@@ -1,12 +1,11 @@
-
-require("dotenv").config();
-
 const express = require("express");
 const path = require("path");
 const { GoogleGenAI } = require("@google/genai");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+require("dotenv").config();
 
 // Configure Google Gemma API
 if (!process.env.GEMMA_API_KEY) {
