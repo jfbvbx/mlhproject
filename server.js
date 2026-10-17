@@ -1,78 +1,138 @@
 
 const express = require("express");
 const path = require("path");
+const dotenv = require("dotenv");
 const { GoogleGenAI } = require("@google/genai");
 
-const dotenv = require("dotenv");
-
-const envPath = path.join(__dirname, ".env");
-
-const result = dotenv.config({ path: envPath });
-
-if (result.error) {
-    console.error("FAILED TO LOAD .env:", result.error.message);
-} else {
-    console.log(".env loaded successfully!");
-}
-
-console.log("API key found:", !!process.env.GEMINI_API_KEY);
+// LOAD ENVIRONMENT VARIABLES
+dotenv.config({
+    path: path.join(__dirname, ".env")
+});
 
 const app = express();
-const PORT = process.env.PORT;
 
-// Replace with your NEW Google API key.
-// Keep this file private; never put the key in browser JavaScript.
+const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.GEMINI_API_KEY;
+const MODEL = "gemma-4-26b-a4b-it";
 
-//new stuff i added
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+if (!API_KEY) {
+    console.error("ERROR: GEMINI_API_KEY missing from .env");
+    process.exit(1);
+}
 
-app.use(express.json());
+console.log("API key loaded successfully!");
 
-// Serve files from the public folder beside server.js
+const ai = new GoogleGenAI({
+    apiKey: API_KEY
+});
+
+// MIDDLEWARE
+app.use(express.json({ limit: "100kb" }));
+
 const publicFolder = path.join(__dirname, "public");
 app.use(express.static(publicFolder));
 
+// HEALTH CHECK
 app.get("/api/health", (req, res) => {
-    res.json({ status: "Server is running" });
+    res.json({
+        status: "Server is running",
+        model: MODEL
+    });
 });
 
+// GEMMA CHAT ENDPOINT
 app.post("/api/chat", async (req, res) => {
     try {
         const message = req.body?.message;
 
         if (typeof message !== "string" || !message.trim()) {
-            return res.status(400).json({ error: "Please enter a message." });
+            return res.status(400).json({
+                error: "Please enter a message."
+            });
         }
 
+        // Limit input characters
+        const prompt = message.trim().slice(0, 3000);
+
+        
         const result = await ai.models.generateContent({
             model: "gemma-4-26b-a4b-it",
-            contents: message.trim(),
+            contents: prompt,
             config: {
-                maxOutputTokens: 250,
-                temperature: 0.5
+                temperature: 0.3
             }
         });
 
+        const reply = result.text || "";
 
-        res.json({ reply: result.text || "No response returned." });
+        const finishReason =
+        result.candidates?.[0]?.finishReason || "UNKNOWN";
+
+        console.log("Gemma response:", result.text);
+        console.log("Finish reason:", result.candidates?.[0]?.finishReason);
+
+
+        if (!reply.trim()) {
+            return res.status(502).json({
+                error: "Gemma returned an empty response.",
+                finishReason
+            });
+        }
+
+        // Remove markdown code fences if present
+        const cleaned = reply
+            .replace(/```json/gi, "")
+            .replace(/```/g, "")
+            .trim();
+
+        // Validate JSON before sending to game.js
+        let parsed;
+
+        try {
+            parsed = JSON.parse(cleaned);
+        } catch (error) {
+            console.error("Invalid Gemma JSON:", cleaned);
+
+            return res.status(502).json({
+                error: "Gemma returned invalid JSON.",
+                finishReason,
+                details: error.message
+            });
+        }
+
+        // Return JSON as a string for existing game.js
+        res.json({
+            reply: JSON.stringify(parsed),
+            finishReason
+        });
+
     } catch (error) {
-        console.error("Gemma API error:", error.message);
-        res.status(500).json({ error: "Gemma API request failed." });
+        console.error("Gemma API error:", error);
+
+        res.status(500).json({
+            error: error.message || "Gemma API request failed."
+        });
     }
 });
 
-// Show a useful message for missing files or pages
+// 404 HANDLER
 app.use((req, res) => {
-    res.status(404).send(`Not found: ${req.method} ${req.originalUrl}`);
+    res.status(404).json({
+        error: `Not found: ${req.method} ${req.originalUrl}`
+    });
 });
 
-// Start the server and report startup errors
+// START SERVER
 const server = app.listen(PORT, "127.0.0.1", () => {
-    console.log("Node.js server started successfully.");
+    console.log("");
+    console.log("================================");
+    console.log("   STUDYBOUND SERVER ONLINE");
+    console.log("================================");
     console.log(`Website: http://localhost:${PORT}`);
-    console.log(`Health check: http://localhost:${PORT}/api/health`);
-    console.log(`Serving website files from: ${publicFolder}`);
+    console.log(`Health: http://localhost:${PORT}/api/health`);
+    console.log(`Model: ${MODEL}`);
+    console.log(`Public folder: ${publicFolder}`);
+    console.log("================================");
 });
 
 server.on("error", (error) => {
