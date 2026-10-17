@@ -33,8 +33,13 @@ app.post("/api/chat", async (req, res) => {
 
         const result = await ai.models.generateContent({
             model: "gemma-4-26b-a4b-it",
-            contents: message.trim()
+            contents: message.trim(),
+            config: {
+                maxOutputTokens: 250,
+                temperature: 0.5
+            }
         });
+
 
         res.json({ reply: result.text || "No response returned." });
     } catch (error) {
